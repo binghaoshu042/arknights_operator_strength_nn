@@ -115,7 +115,7 @@ python app/server.py
     "res": 5,
     "dps": 4500,
     "dph": 14000,
-    "total_damage": 280000,
+    "total_damage": 80000,
     "sp_cost": 45,
     "init_sp": 25,
     "control_coverage": 0.0,
