@@ -759,11 +759,10 @@
         6: "推演诊断完成"
     };
 
-    // Listeners
-    window.addEventListener("DOMContentLoaded", () => {
-        handleProfessionChange();
-        setupSliderValueListeners();
-    });
+    // Listeners - Executed immediately as DOM is already loaded above this script tag
+    handleProfessionChange();
+    setupSliderValueListeners();
+
 
     opProfession.addEventListener("change", handleProfessionChange);
     opType.addEventListener("change", handleDamageTypeChange);
