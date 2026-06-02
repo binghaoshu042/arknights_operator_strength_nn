@@ -7,8 +7,8 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 # Add current directory to path to enable clean absolute imports
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-# Import the Flask application from app/server.py
-from app.server import app
+# Import the Flask application from web_app/server.py
+from web_app.server import app
 
 if __name__ == "__main__":
     # Hugging Face Spaces binds the app to port 7860 by default

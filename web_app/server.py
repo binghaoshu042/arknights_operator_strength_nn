@@ -12,7 +12,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from src.models.nn_model import OperatorStrengthNN
 from src.features.feature_extractor import OperatorFeatureExtractor
 from src.evaluation.evaluator import calculate_gradient_attribution
-from app.utils import PROFESSION_METADATA, load_model_and_preprocessor
+from web_app.utils import PROFESSION_METADATA, load_model_and_preprocessor
 
 app = Flask(__name__, template_folder="templates", static_folder="static")
 

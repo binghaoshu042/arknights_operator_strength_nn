@@ -5,7 +5,7 @@ import torch
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from app.utils import inject_arknights_style, load_model_and_preprocessor, PROFESSION_METADATA
+from web_app.utils import inject_arknights_style, load_model_and_preprocessor, PROFESSION_METADATA
 from src.evaluation.evaluator import calculate_gradient_attribution
 
 # Set Page Config
