@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测测你是什么杯 | 六星干员战术神经网络测试仪</title>
+    <!-- Premium Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+SC:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        :root {
+            --bg-color: #f7f9fc;
+            --card-bg: #ffffff;
+            --border-color: #eef2f7;
+            --text-color: #2b3a4a;
+            --text-muted: #6b7c96;
+            --primary-amber: #d4a373; /* Elegant Dusty Gold */
+            --primary-blue: #5c868d;  /* Muted Teal Blue */
+            --soft-green: #8fa89b;    /* Sage Green */
+            --soft-red: #e07a5f;      /* Soft Terracotta Red */
+            --soft-grey: #e9ecef;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', 'Noto Sans SC', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 40px 15px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 780px;
+            margin: 0 auto;
+        }
+
+        /* 1. Stepper / Progress Bar */
+        .stepper-container {
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .progress-bar-bg {
+            background-color: var(--soft-grey);
+            height: 6px;
+            border-radius: 3px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            background: linear-gradient(90deg, var(--primary-blue) 0%, var(--primary-amber) 100%);
+            height: 100%;
+            width: 20%;
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 3px;
+        }
+
+        .step-counter {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* 2. Premium Light Card Styles */
+        .glass-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 35px;
+            box-shadow: 0 10px 30px rgba(165, 175, 185, 0.12);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-blue) 0%, var(--primary-amber) 100%);
+        }
+
+        .glass-card h2 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            color: var(--text-color);
+            text-align: center;
+        }
+
+        .glass-card .subtitle {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        /* Wizard Step Pages */
+        .wizard-step {
+            display: none;
+        }
+
+        .wizard-step.active {
+            display: block;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Inputs and Selects */
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--text-color);
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .form-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: -4px;
+            margin-bottom: 8px;
+        }
+
+        select, input[type="text"], input[type="number"] {
+            width: 100%;
+            background-color: #fafbfc;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 6px;
+            color: var(--text-color);
+            padding: 12px 16px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        select:focus, input[type="text"]:focus, input[type="number"]:focus {
+            border-color: var(--primary-blue);
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(92, 134, 141, 0.12);
+        }
+
+        /* Sliders */
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .slider-header span.val {
+            color: var(--primary-blue);
+            font-weight: 800;
+            font-size: 1.05rem;
+            background-color: rgba(92, 134, 141, 0.08);
+            padding: 2px 10px;
+            border-radius: 4px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: var(--soft-grey);
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            background: var(--primary-blue);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            transition: transform 0.1s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+        }
+
+        /* Buttons Layout */
+        .btn-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 35px;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px 28px;
+            font-family: inherit;
+            font-weight: 700;
+            font-size: 0.95rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-blue);
+            color: #ffffff;
+            flex-grow: 2;
+            box-shadow: 0 4px 12px rgba(92, 134, 141, 0.2);
+        }
+
+        .btn-primary:hover {
+            background-color: #4a6c72;
+            box-shadow: 0 4px 16px rgba(92, 134, 141, 0.35);
+        }
+
+        .btn-secondary {
+            background-color: #fafbfc;
+            border: 1.5px solid #e2e8f0;
+            color: var(--text-muted);
+            flex-grow: 1;
+        }
+
+        .btn-secondary:hover {
+            background-color: #f1f3f5;
+            color: var(--text-color);
+        }
+
+        /* Masking Tip Box */
+        .masking-tip {
+            background-color: rgba(92, 134, 141, 0.05);
+            border-left: 3px solid var(--primary-blue);
+            border-radius: 4px;
+            padding: 10px 14px;
+            font-size: 0.8rem;
+            color: var(--primary-blue);
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        /* 3. Results Layout (Step 6) */
+        .result-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .badge-cup {
+            display: inline-block;
+            padding: 12px 40px;
+            border-radius: 8px;
+            font-size: 2.3rem;
+            font-weight: 900;
+            box-shadow: 0 8px 24px rgba(165,175,185,0.15);
+            margin: 15px 0;
+        }
+
+        /* Color profiles for cups in light mode */
+        .cup-s {
+            background-color: rgba(224, 122, 95, 0.12);
+            color: var(--soft-red);
+            border: 1.5px solid rgba(224, 122, 95, 0.3);
+        }
+        .cup-a {
+            background-color: rgba(212, 163, 115, 0.12);
+            color: var(--primary-amber);
+            border: 1.5px solid rgba(212, 163, 115, 0.3);
+        }
+        .cup-b {
+            background-color: rgba(92, 134, 141, 0.12);
+            color: var(--primary-blue);
+            border: 1.5px solid rgba(92, 134, 141, 0.3);
+        }
+        .cup-c {
+            background-color: #f1f3f5;
+            color: var(--text-muted);
+            border: 1.5px solid #e2e8f0;
+        }
+
+        .confidence-lbl {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* Progress Bars */
+        .prob-section {
+            margin: 25px 0;
+        }
+
+        .prob-bar-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .prob-lbl {
+            width: 70px;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .prob-bar-bg {
+            flex-grow: 1;
+            background-color: #fafbfc;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            height: 18px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .prob-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            width: 0%;
+            transition: width 0.6s cubic-bezier(0.1, 0.8, 0.1, 1.0);
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding-right: 8px;
+            color: #ffffff;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        /* Tactical report description card */
+        .report-card {
+            background-color: #fafbfc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 25px 0;
+            text-align: left;
+            font-size: 0.9rem;
+            color: var(--text-color);
+        }
+
+        .report-card h4 {
+            font-size: 1rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            color: var(--primary-blue);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 6px;
+        }
+
+        .report-text {
+            line-height: 1.6;
+        }
+
+        .report-bullet {
+            margin-top: 8px;
+            padding-left: 15px;
+            position: relative;
+        }
+
+        .report-bullet::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: var(--primary-amber);
+            font-weight: bold;
+        }
+
+        /* Charts Layout */
+        .charts-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 25px;
+        }
+
+        @media (max-width: 768px) {
+            .charts-row {
+                grid-template-columns: 1fr;
+            }
+            body {
+                padding: 15px 8px;
+            }
+            .glass-card {
+                padding: 25px 18px;
+            }
+        }
+
+        .plot-container {
+            height: 230px;
+            position: relative;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Stepper Top Bar -->
+    <div class="stepper-container" id="stepper">
+        <span class="step-counter" id="step_indicator">第 1 / 5 步：基础档案</span>
+        <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="progress_bar"></div>
+        </div>
+    </div>
+
+    <!-- Main Wizard Card -->
+    <div class="glass-card">
+        <h2>测测你是什么杯</h2>
+        <div class="subtitle" id="wizard_subtitle">六星干员战术维度神经网络评估仪</div>
+
+        <form id="wizard_form" onsubmit="return false;">
+            <!-- ================= STEP 1: Basic profiles ================= -->
+            <div class="wizard-step active" id="step_1">
+                <div class="form-group">
+                    <label for="op_name">代号/干员名称 (Name)</label>
+                    <input type="text" id="op_name" value="测试干员">
+                </div>
+                <div class="form-group">
+                    <label for="op_profession">职业大类 (Profession)</label>
+                    <div class="form-desc">不同大类的技能战术权重不同，神经网络已将它们彻底拆分训练。</div>
+                    <select id="op_profession">
+                        <option value="Vanguard">先锋 (Vanguard)</option>
+                        <option value="Guard" selected>近卫 (Guard)</option>
+                        <option value="Defender">重装 (Defender)</option>
+                        <option value="Sniper">狙击 (Sniper)</option>
+                        <option value="Caster">术师 (Caster)</option>
+                        <option value="Medic">医疗 (Medic)</option>
+                        <option value="Supporter">辅助 (Supporter)</option>
+                        <option value="Specialist">特种 (Specialist)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="op_branch">细分分支 (Sub-class)</label>
+                    <select id="op_branch">
+                        <!-- Populated dynamically -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="op_type">伤害类型 (Damage Type)</label>
+                    <select id="op_type">
+                        <option value="物理" selected>物理伤害 (Physical)</option>
+                        <option value="法术">法术伤害 (Arts)</option>
+                        <option value="混合">双修/真实伤害 (Hybrid)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- ================= STEP 2: Combat Trifold ================= -->
+            <div class="wizard-step" id="step_2">
+                <div class="form-group">
+                    <div class="slider-header">
+                        <label for="slide_atk">基础攻击力 (ATK)</label>
+                        <span class="val" id="val_atk">1100</span>
+                    </div>
+                    <input type="range" id="slide_atk" min="500" max="2000" value="1100">
+                </div>
+                <div class="form-group">
+                    <div class="slider-header">
+                        <label for="slide_def">基础防御力 (DEF)</label>
+                        <span class="val" id="val_def">400</span>
+                    </div>
+                    <input type="range" id="slide_def" min="200" max="650" value="400">
+                </div>
+                <div class="form-group">
+                    <div class="slider-header">
+                        <label for="slide_res">基础法术抗性 (RES)</label>
+                        <span class="val" id="val_res">5</span>
+                    </div>
+                    <input type="range" id="slide_res" min="0" max="25" value="5">
+                </div>
+            </div>
+
+            <!-- ================= STEP 3: Outputs (DPS/DPH) ================= -->
+            <div class="wizard-step" id="step_3">
+                <div class="masking-tip" id="dph_masking_tip">
+                    💡 <strong>法术伤害干员已屏蔽 DPH</strong>：由于法术伤害按百分比结算抗性，而非像物理伤害那样受到防御力的固定值减法稀释。因此系统底层已对法术类型干员的 DPH 进行归零屏蔽。
+                </div>
+                <div class="form-group">
+                    <div class="slider-header">
+                        <label for="slide_dps">周期性/常规每秒输出 (DPS)</label>
+                        <span class="val" id="val_dps">1500</span>
+                    </div>
+                    <input type="range" id="slide_dps" min="300" max="5000" value="1500">
+                </div>
+                <div class="form-group" id="dph_slider_group">
+                    <div class="slider-header">
+                        <label for="slide_dph">单次常规物理攻击力 (DPH)</label>
+                        <span class="val" id="val_dph">1800</span>
+                    </div>
+                    <input type="range" id="slide_dph" min="400" max="15000" value="1800">
+                </div>
+            </div>
+
+            <!-- ================= STEP 4: Skill values ================= -->
+            <div class="wizard-step" id="step_4">
+                <div class="form-group">
+                    <div class="slider-header">
+                        <label for="slide_total_damage">技能单次循环总伤害/总治疗 (Total Damage)</label>
+                        <span class="val" id="val_total_damage">75000</span>
+                    </div>
+                    <input type="range" id="slide_total_damage" min="10000" max="300000" value="75000" step="1000">
+                </div>
+                <div class="form-group">
+                    <div class="slider-header">
+                        <label for="slide_sp_cost">技能启动SP消耗 (SP Cost)</label>
+                        <span class="val" id="val_sp_cost">45</span>
+                    </div>
+                    <input type="range" id="slide_sp_cost" min="5" max="90" value="45">
+                </div>
+                <div class="form-group">
+                    <div class="slider-header">
+                        <label for="slide_init_sp">技能初始/预置SP (Initial SP)</label>
+                        <span class="val" id="val_init_sp">15</span>
+                    </div>
+                    <input type="range" id="slide_init_sp" min="0" max="70" value="15">
+                </div>
+            </div>
+
+            <!-- ================= STEP 5: CC and Buffs ================= -->
+            <div class="wizard-step" id="step_5">
+                <div class="form-group">
+                    <div class="slider-header">
+                        <label for="slide_control_coverage">技能控制时间覆盖率 (Stun/Slow)</label>
+                        <span class="val" id="val_control_coverage">0.08</span>
+                    </div>
+                    <input type="range" id="slide_control_coverage" min="0.0" max="0.6" value="0.08" step="0.01">
+                </div>
+                <div class="form-group">
+                    <div class="slider-header">
+                        <label for="slide_buff_amp">属性增幅/增伤辅助倍率 (Buff)</label>
+                        <span class="val" id="val_buff_amp">1.10</span>
+                    </div>
+                    <input type="range" id="slide_buff_amp" min="1.0" max="1.5" value="1.10" step="0.01">
+                </div>
+            </div>
+
+            <!-- ================= STEP 6: Final Results Panel ================= -->
+            <div class="wizard-step" id="step_6">
+                <div class="result-container">
+                    <div class="result-label">🧠 经拉普拉斯神经网络推演，您的战术评级为</div>
+                    <div class="badge-cup cup-a" id="cup_badge">大杯</div>
+                    <div class="confidence-lbl">推演可信度 (Confidence): <strong id="val_confidence" style="color:var(--text-color);">85.4%</strong></div>
+                </div>
+
+                <!-- Automated report -->
+                <div class="report-card">
+                    <h4>📊 战术神经诊断报告</h4>
+                    <div class="report-text" id="report_text">
+                        正在评估决策树梯度...
+                    </div>
+                </div>
+
+                <!-- Probabilities Fill bars -->
+                <div class="prob-section">
+                    <div class="prob-bar-row">
+                        <div class="prob-lbl">小杯 (C)</div>
+                        <div class="prob-bar-bg">
+                            <div class="prob-bar-fill" id="fill_c" style="background-color: var(--text-muted); width: 5%;">5%</div>
+                        </div>
+                    </div>
+                    <div class="prob-bar-row">
+                        <div class="prob-lbl">中杯 (B)</div>
+                        <div class="prob-bar-bg">
+                            <div class="prob-bar-fill" id="fill_b" style="background-color: var(--primary-blue); width: 10%;">10%</div>
+                        </div>
+                    </div>
+                    <div class="prob-bar-row">
+                        <div class="prob-lbl">大杯 (A)</div>
+                        <div class="prob-bar-bg">
+                            <div class="prob-bar-fill" id="fill_a" style="background-color: var(--primary-amber); width: 70%;">70%</div>
+                        </div>
+                    </div>
+                    <div class="prob-bar-row">
+                        <div class="prob-lbl">超大杯 (S)</div>
+                        <div class="prob-bar-bg">
+                            <div class="prob-bar-fill" id="fill_s" style="background-color: var(--soft-red); width: 15%;">15%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Custom plots in soft colors -->
+                <div class="charts-row">
+                    <div>
+                        <h4 style="font-size:0.9rem; text-align:center; color:var(--text-muted);">⚖️ 10维偏离对比</h4>
+                        <div class="plot-container">
+                            <canvas id="radarChart"></canvas>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 style="font-size:0.9rem; text-align:center; color:var(--text-muted);">🔬 决策梯度归因</h4>
+                        <div class="plot-container">
+                            <canvas id="barChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stepper Buttons -->
+            <div class="btn-row" id="btn_row">
+                <button class="btn btn-secondary" id="btn_back" style="display:none;">上一题</button>
+                <button class="btn btn-primary" id="btn_next">下一题</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Structural Metadata (expanded limits to match server stats)
+    const professionMetadata = {
+        "Vanguard": {
+            label: "先锋",
+            branches: ["尖兵", "冲锋手", "战术家", "情报官", "执旗手"],
+            limits: {
+                atk: [300, 1000], def: [250, 550], res: [0, 15], dps: [100, 2000], dph: [200, 8000],
+                control_coverage: [0.0, 0.5], buff_amp: [1.0, 1.5], total_damage: [0, 100000], sp_cost: [5, 60], init_sp: [0, 45]
+            },
+            avg: {
+                atk: 500, def: 375, res: 0, dps: 500, dph: 600,
+                control_coverage: 0.10, buff_amp: 1.10, total_damage: 15000, sp_cost: 30, init_sp: 10
+            }
+        },
+        "Guard": {
+            label: "近卫",
+            branches: ["强攻手", "领主", "无畏者", "剑豪", "术战者", "收割者", "解放者"],
+            limits: {
+                atk: [500, 2000], def: [200, 650], res: [0, 25], dps: [300, 5000], dph: [400, 15000],
+                control_coverage: [0.0, 0.6], buff_amp: [1.0, 1.5], total_damage: [10000, 300000], sp_cost: [5, 90], init_sp: [0, 70]
+            },
+            avg: {
+                atk: 1100, def: 400, res: 5, dps: 1500, dph: 1800,
+                control_coverage: 0.08, buff_amp: 1.10, total_damage: 75000, sp_cost: 45, init_sp: 15
+            }
+        },
+        "Defender": {
+            label: "重装",
+            branches: ["守护者", "决战铁卫", "驭法铁卫", "不屈者", "要塞"],
+            limits: {
+                atk: [300, 1500], def: [500, 1400], res: [0, 35], dps: [50, 3000], dph: [100, 10000],
+                control_coverage: [0.0, 1.0], buff_amp: [1.0, 2.0], total_damage: [0, 150000], sp_cost: [5, 75], init_sp: [0, 50]
+            },
+            avg: {
+                atk: 650, def: 900, res: 10, dps: 650, dph: 850,
+                control_coverage: 0.35, buff_amp: 1.15, total_damage: 25000, sp_cost: 35, init_sp: 10
+            }
+        },
+        "Sniper": {
+            label: "狙击",
+            branches: ["速射手", "轰击手", "投掷手", "重射手", "战术射手", "散布手"],
+            limits: {
+                atk: [400, 2200], def: [80, 300], res: [0, 20], dps: [400, 6000], dph: [300, 15000],
+                control_coverage: [0.0, 0.4], buff_amp: [1.0, 1.3], total_damage: [10000, 350000], sp_cost: [5, 80], init_sp: [0, 60]
+            },
+            avg: {
+                atk: 950, def: 170, res: 5, dps: 1400, dph: 1500,
+                control_coverage: 0.05, buff_amp: 1.05, total_damage: 60000, sp_cost: 40, init_sp: 15
+            }
+        },
+        "Caster": {
+            label: "术师",
+            branches: ["中坚术师", "扩散术师", "阵法术师", "驭械术师", "轰击术师", "秘术师"],
+            limits: {
+                atk: [500, 2200], def: [80, 250], res: [10, 40], dps: [300, 5000], dph: [500, 15000],
+                control_coverage: [0.0, 0.8], buff_amp: [1.0, 1.4], total_damage: [10000, 300000], sp_cost: [10, 90], init_sp: [0, 70]
+            },
+            avg: {
+                atk: 1050, def: 150, res: 22, dps: 1100, dph: 1750,
+                control_coverage: 0.20, buff_amp: 1.10, total_damage: 60000, sp_cost: 50, init_sp: 20
+            }
+        },
+        "Medic": {
+            label: "医疗",
+            branches: ["医师", "群愈师", "疗养师", "行医", "咒愈师"],
+            limits: {
+                atk: [300, 1500], def: [80, 350], res: [0, 30], dps: [100, 2500], dph: [150, 10000],
+                control_coverage: [0.0, 0.3], buff_amp: [1.0, 2.0], total_damage: [0, 150000], sp_cost: [5, 70], init_sp: [0, 50]
+            },
+            avg: {
+                atk: 625, def: 190, res: 10, dps: 600, dph: 750,
+                control_coverage: 0.05, buff_amp: 1.30, total_damage: 37500, sp_cost: 30, init_sp: 10
+            }
+        },
+        "Supporter": {
+            label: "辅助",
+            branches: ["凝滞师", "削弱者", "吟游诗人", "召唤师", "护佑者", "工匠"],
+            limits: {
+                atk: [300, 1500], def: [80, 350], res: [10, 35], dps: [100, 3000], dph: [200, 10000],
+                control_coverage: [0.0, 1.0], buff_amp: [1.0, 2.5], total_damage: [0, 150000], sp_cost: [5, 80], init_sp: [0, 60]
+            },
+            avg: {
+                atk: 625, def: 200, res: 20, dps: 700, dph: 900,
+                control_coverage: 0.55, buff_amp: 1.70, total_damage: 25000, sp_cost: 35, init_sp: 15
+            }
+        },
+        "Specialist": {
+            label: "特种",
+            branches: ["处决者", "推击手", "钩手", "行商", "陷阱师", "傀儡师", "伏击客"],
+            limits: {
+                atk: [400, 1800], def: [150, 550], res: [0, 30], dps: [200, 5000], dph: [300, 15000],
+                control_coverage: [0.0, 1.0], buff_amp: [1.0, 1.8], total_damage: [5000, 250000], sp_cost: [1, 50], init_sp: [0, 35]
+            },
+            avg: {
+                atk: 825, def: 325, res: 10, dps: 1400, dph: 1550,
+                control_coverage: 0.45, buff_amp: 1.20, total_damage: 50000, sp_cost: 20, init_sp: 8
+            }
+        }
+    };
+
+    // Wizard Stepper State
+    let currentStep = 1;
+    const totalSteps = 5;
+
+    // DOM References
+    const stepIndicator = document.getElementById("step_indicator");
+    const progressBar = document.getElementById("progress_bar");
+    const subtitle = document.getElementById("wizard_subtitle");
+    const btnBack = document.getElementById("btn_back");
+    const btnNext = document.getElementById("btn_next");
+    const opProfession = document.getElementById("op_profession");
+    const opBranch = document.getElementById("op_branch");
+    const opType = document.getElementById("op_type");
+
+    let radarChartInstance = null;
+    let barChartInstance = null;
+
+    const sliders = [
+        "atk", "def", "res", "dps", "dph", 
+        "total_damage", "sp_cost", "init_sp", "control_coverage", "buff_amp"
+    ];
+
+    const stepTitles = {
+        1: "第 1 / 5 步：基础档案",
+        2: "第 2 / 5 步：战斗三围",
+        3: "第 3 / 5 步：核心伤害",
+        4: "第 4 / 5 步：技能总伤",
+        5: "第 5 / 5 步：战术辅助",
+        6: "推演诊断完成"
+    };
+
+    // Listeners
+    window.addEventListener("DOMContentLoaded", () => {
+        handleProfessionChange();
+        setupSliderValueListeners();
+    });
+
+    opProfession.addEventListener("change", handleProfessionChange);
+    opType.addEventListener("change", handleDamageTypeChange);
+
+    function handleProfessionChange() {
+        const prof = opProfession.value;
+        const meta = professionMetadata[prof];
+        
+        opBranch.innerHTML = "";
+        meta.branches.forEach(b => {
+            const opt = document.createElement("option");
+            opt.value = b;
+            opt.textContent = b;
+            opBranch.appendChild(opt);
+        });
+
+        sliders.forEach(slideId => {
+            const slideEl = document.getElementById("slide_" + slideId);
+            const valEl = document.getElementById("val_" + slideId);
+            const limits = meta.limits[slideId];
+            const avg = meta.avg[slideId];
+
+            slideEl.min = limits[0];
+            slideEl.max = limits[1];
+            slideEl.value = avg;
+            valEl.textContent = avg;
+        });
+
+        if (prof === "Caster") opType.value = "法术";
+        else if (prof === "Sniper") opType.value = "物理";
+        
+        handleDamageTypeChange();
+    }
+
+    function handleDamageTypeChange() {
+        const type = opType.value;
+        const dphGroup = document.getElementById("dph_slider_group");
+        const maskingTip = document.getElementById("dph_masking_tip");
+        
+        if (type === "法术") {
+            dphGroup.style.opacity = "0.45";
+            dphGroup.style.pointerEvents = "none";
+            maskingTip.style.display = "block";
+            document.getElementById("slide_dph").value = 0;
+            document.getElementById("val_dph").textContent = "0 (已屏蔽)";
+        } else {
+            dphGroup.style.opacity = "1";
+            dphGroup.style.pointerEvents = "auto";
+            maskingTip.style.display = "none";
+            
+            const prof = opProfession.value;
+            const avgDph = professionMetadata[prof].avg.dph;
+            document.getElementById("slide_dph").value = avgDph;
+            document.getElementById("val_dph").textContent = avgDph;
+        }
+    }
+
+    function setupSliderValueListeners() {
+        sliders.forEach(slideId => {
+            const slideEl = document.getElementById("slide_" + slideId);
+            const valEl = document.getElementById("val_" + slideId);
+
+            slideEl.addEventListener("input", () => {
+                if (opType.value === "法术" && slideId === "dph") {
+                    valEl.textContent = "0 (已屏蔽)";
+                } else {
+                    valEl.textContent = slideEl.value;
+                }
+            });
+        });
+    }
+
+    // Navigation Wizard logic
+    btnNext.addEventListener("click", () => {
+        if (currentStep < totalSteps) {
+            document.getElementById(`step_${currentStep}`).classList.remove("active");
+            currentStep++;
+            document.getElementById(`step_${currentStep}`).classList.add("active");
+            
+            updateStepperUI();
+        } else if (currentStep === totalSteps) {
+            btnNext.disabled = true;
+            btnNext.textContent = "正在战术分析中...";
+            
+            submitWizardForm();
+        } else {
+            restartTest();
+        }
+    });
+
+    btnBack.addEventListener("click", () => {
+        if (currentStep > 1 && currentStep <= totalSteps) {
+            document.getElementById(`step_${currentStep}`).classList.remove("active");
+            currentStep--;
+            document.getElementById(`step_${currentStep}`).classList.add("active");
+            
+            updateStepperUI();
+        }
+    });
+
+    function updateStepperUI() {
+        stepIndicator.textContent = stepTitles[currentStep];
+        progressBar.style.width = (currentStep / totalSteps * 100) + "%";
+        
+        if (currentStep === 1) {
+            btnBack.style.display = "none";
+            btnNext.textContent = "下一题";
+        } else if (currentStep === totalSteps) {
+            btnBack.style.display = "block";
+            btnNext.textContent = "完成！开始推演";
+        } else {
+            btnBack.style.display = "block";
+            btnNext.textContent = "下一题";
+            btnNext.disabled = false;
+        }
+    }
+
+    function restartTest() {
+        document.getElementById(`step_6`).classList.remove("active");
+        currentStep = 1;
+        document.getElementById(`step_1`).classList.add("active");
+        
+        document.getElementById("stepper").style.display = "block";
+        subtitle.style.display = "block";
+        
+        updateStepperUI();
+        handleProfessionChange();
+    }
+
+    function submitWizardForm() {
+        const payload = {
+            name: document.getElementById("op_name").value,
+            profession: opProfession.value,
+            branch: opBranch.value,
+            type: opType.value,
+            atk: parseFloat(document.getElementById("slide_atk").value),
+            def: parseFloat(document.getElementById("slide_def").value),
+            res: parseFloat(document.getElementById("slide_res").value),
+            dps: parseFloat(document.getElementById("slide_dps").value),
+            dph: opType.value === "法术" ? 0.0 : parseFloat(document.getElementById("slide_dph").value),
+            total_damage: parseFloat(document.getElementById("slide_total_damage").value),
+            sp_cost: parseFloat(document.getElementById("slide_sp_cost").value),
+            init_sp: parseFloat(document.getElementById("slide_init_sp").value),
+            control_coverage: parseFloat(document.getElementById("slide_control_coverage").value),
+            buff_amp: parseFloat(document.getElementById("slide_buff_amp").value)
+        };
+
+        fetch("/api/predict", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById(`step_${totalSteps}`).classList.remove("active");
+                currentStep = 6;
+                document.getElementById(`step_6`).classList.add("active");
+                
+                document.getElementById("stepper").style.display = "none";
+                subtitle.style.display = "none";
+                
+                btnBack.style.display = "none";
+                btnNext.disabled = false;
+                btnNext.textContent = "重新测试";
+                
+                renderResults(data, payload);
+            } else {
+                alert("推演失败: " + data.error);
+                btnNext.disabled = false;
+                btnNext.textContent = "完成！开始推演";
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert("与神经服务器通信失败。请确保您运行了 'python app/server.py'。");
+            btnNext.disabled = false;
+            btnNext.textContent = "完成！开始推演";
+        });
+    }
+
+    function renderResults(data, payload) {
+        const badge = document.getElementById("cup_badge");
+        badge.textContent = data.predicted_cup;
+        
+        badge.className = "badge-cup";
+        if (data.predicted_cup === "超大杯") badge.classList.add("cup-s");
+        else if (data.predicted_cup === "大杯") badge.classList.add("cup-a");
+        else if (data.predicted_cup === "中杯") badge.classList.add("cup-b");
+        else badge.classList.add("cup-c");
+
+        document.getElementById("val_confidence").textContent = (data.confidence * 100).toFixed(1) + "%";
+
+        const keys = { "小杯": "c", "中杯": "b", "大杯": "a", "超大杯": "s" };
+        for (const [cup, char] of Object.entries(keys)) {
+            const prob = data.probabilities[cup];
+            const fillEl = document.getElementById("fill_" + char);
+            fillEl.style.width = (prob * 100) + "%";
+            fillEl.textContent = (prob * 100).toFixed(1) + "%";
+        }
+
+        const limits = data.limits;
+        const averages = data.averages;
+        const categories = ["攻击力", "防御力", "法抗", "每秒输出", "单次伤害", "CC覆盖率", "增伤辅助", "技能总伤", "SP逆消耗", "初始SP"];
+        
+        const normUser = [];
+        const normAvg = [];
+        const getNorm = (v, min, max) => ((v - min) / (max - min)) * 100;
+
+        normUser.push(getNorm(payload.atk, limits.atk[0], limits.atk[1]));
+        normUser.push(getNorm(payload.def, limits.def[0], limits.def[1]));
+        normUser.push(getNorm(payload.res, limits.res[0], limits.res[1]));
+        normUser.push(getNorm(payload.dps, limits.dps[0], limits.dps[1]));
+        normUser.push(getNorm(payload.dph, limits.dph[0], limits.dph[1]));
+        normUser.push(getNorm(payload.control_coverage, limits.control_coverage[0], limits.control_coverage[1]));
+        normUser.push(getNorm(payload.buff_amp, limits.buff_amp[0], limits.buff_amp[1]));
+        normUser.push(getNorm(payload.total_damage, limits.total_damage[0], limits.total_damage[1]));
+        normUser.push(((limits.sp_cost[1] - payload.sp_cost) / (limits.sp_cost[1] - limits.sp_cost[0])) * 100);
+        normUser.push(getNorm(payload.init_sp, limits.init_sp[0], limits.init_sp[1]));
+
+        normAvg.push(getNorm(averages.atk, limits.atk[0], limits.atk[1]));
+        normAvg.push(getNorm(averages.def, limits.def[0], limits.def[1]));
+        normAvg.push(getNorm(averages.res, limits.res[0], limits.res[1]));
+        normAvg.push(getNorm(averages.dps, limits.dps[0], limits.dps[1]));
+        normAvg.push(getNorm(averages.dph, limits.dph[0], limits.dph[1]));
+        normAvg.push(getNorm(averages.control_coverage, limits.control_coverage[0], limits.control_coverage[1]));
+        normAvg.push(getNorm(averages.buff_amp, limits.buff_amp[0], limits.buff_amp[1]));
+        normAvg.push(getNorm(averages.total_damage, limits.total_damage[0], limits.total_damage[1]));
+        normAvg.push(((limits.sp_cost[1] - averages.sp_cost) / (limits.sp_cost[1] - limits.sp_cost[0])) * 100);
+        normAvg.push(getNorm(averages.init_sp, limits.init_sp[0], limits.init_sp[1]));
+
+        updateRadarChart(categories, normUser, normAvg);
+
+        const attrFeatures = data.attributions.map(a => a.feature);
+        const attrValues = data.attributions.map(a => a.value);
+        updateBarChart(attrFeatures, attrValues);
+
+        generateReport(data, payload);
+    }
+
+    function generateReport(data, payload) {
+        const reportEl = document.getElementById("report_text");
+        const cup = data.predicted_cup;
+        const name = payload.name;
+        
+        const positives = data.attributions.filter(a => a.value > 0.001);
+        const negatives = data.attributions.filter(a => a.value < -0.001);
+        
+        let strengthsText = "";
+        let weaknessesText = "";
+        
+        if (positives.length > 0) {
+            strengthsText = "<h4>🟢 核心战术优势（加分项）：</h4>";
+            positives.slice(0, 3).forEach(pos => {
+                strengthsText += `<div class="report-bullet"><strong>${pos.feature}</strong> 对评级起到了显著的正向支撑作用。这说明您录入的数据在 ${pos.feature.split(' ')[0]} 维度上极具战术核心竞争力，是本次能够冲上更高评级的决定性加分点。</div>`;
+            });
+        }
+        
+        if (negatives.length > 0) {
+            weaknessesText = "<h4>🔴 决策短板警示（扣分项）：</h4>";
+            const negativeSorted = [...negatives].sort((a, b) => a.value - b.value);
+            negativeSorted.slice(0, 2).forEach(neg => {
+                weaknessesText += `<div class="report-bullet"><strong>${neg.feature}</strong> 维度在决策树中对最终杯级存在向下的拉低作用。这表明 ${neg.feature.split(' ')[0]} 偏低是本次评定的核心短板，有较大的可优化空间。</div>`;
+            });
+        } else {
+            weaknessesText = "<h4>🛡️ 均衡性评价：</h4><div class='report-bullet'>您的干员属性分布极为融洽，决策树中未检测到明显的短板拉低项，表现非常均衡。</div>";
+        }
+        
+        let intro = "";
+        if (cup === "超大杯") {
+            intro = `🎉 恭喜！经过拉普拉斯神经网络推演，干员 <strong>【${name}】</strong> 荣获神级 <strong>【超大杯】</strong> 战术评定！这意味着该配置已完全达到战术顶峰水平，具备绝对的核心竞争力。`;
+        } else if (cup === "大杯") {
+            intro = `🌟 赞！干员 <strong>【${name}】</strong> 最终评定为 <strong>【大杯】</strong>。整体战术模型非常优异，属于一线核心战力，在绝大多数严苛环境中均可独当一面！`;
+        } else if (cup === "中杯") {
+            intro = `👍 表现稳健！干员 <strong>【${name}】</strong> 评定为 <strong>【中杯】</strong>。这说明该配置满足主流常规战术环境，属性分布合理，是一个非常扎实的中坚力量。`;
+        } else {
+            intro = `💡 诊断完成。干员 <strong>【${name}】</strong> 评估为 <strong>【小杯】</strong>。这表明当前参数在当前职业大类中竞争力偏弱，各项数据可能较为分散或有明显的属性稀释，建议对照下方归因进行针对性调整。`;
+        }
+
+        // 4. Dynamic game mode strength analysis based on input stats
+        let nicheText = "";
+        let isCcText = "";
+
+        const limits = data.limits;
+        const normDps = (payload.dps - limits.dps[0]) / (limits.dps[1] - limits.dps[0]);
+        const normDph = (payload.dph - limits.dph[0]) / (limits.dph[1] - limits.dph[0]);
+        const normTd = (payload.total_damage - limits.total_damage[0]) / (limits.total_damage[1] - limits.total_damage[0]);
+        const normCc = (payload.control_coverage - limits.control_coverage[0]) / (limits.control_coverage[1] - limits.control_coverage[0]);
+        const normBuff = (payload.buff_amp - limits.buff_amp[0]) / (limits.buff_amp[1] - limits.buff_amp[0]);
+        const normDef = (payload.def - limits.def[0]) / (limits.def[1] - limits.def[0]);
+        const normSp = (limits.sp_cost[1] - payload.sp_cost) / (limits.sp_cost[1] - limits.sp_cost[0]);
+
+        let dominantNiche = "";
+        let employmentSpace = "";
+        let isEval = "";
+        let ccEval = "";
+
+        if (normDps >= 0.75 || normDph >= 0.75 || normTd >= 0.75) {
+            dominantNiche = "<strong>物理/混合高频高额瞬间爆破与极限输出</strong>。在短时间内能够倾泻出无视重装防御的毁灭级伤害，极度克制中后期的高威胁精英和 Boss 目标。";
+            employmentSpace = "<strong>决战核心输出 (Main Carry) / 危机高难爆破手</strong>。适合作为战术体系的输出终点，专门应付极高压力的集中出怪波次或定点清除棘手宿主。";
+            isEval = "<strong>S+ 至 A+ 级战略基石</strong>。拥有极高的藏品（Artifacts）适配度，在攻速、物理伤害、技力充能等藏品加持下，能产出翻倍的破坏力，是中后期速通Boss的王牌。";
+            ccEval = "<strong>绝对主力</strong>。在限制部署数量、高难词条（强化敌方生命/防御）下，这种极限伤害能够通过高 DPH 强行破防并快速融化高压精英怪，价值极高。";
+        } else if (normCc >= 0.6) {
+            dominantNiche = "<strong>大范围长时间强力战术控场与状态压制</strong>。擅长通过眩晕、束缚、极速停顿或寒冷效果打断敌方高危单位攻势，强力拉长战线。";
+            employmentSpace = "<strong>战术拖延与阻滞核心 / 配合高伤干员的辅控手</strong>。完美融入拖延流和永冻流等战术体系，为爆发输出争取充足的技能转 CD 时间。";
+            isEval = "<strong>A+ 级功能性首选</strong>。在拿到冰冻、束缚伤害等特定控场藏品后，不仅能实现近乎无限的控制，还能自带极高的法术脆化效果，保底与安全感拉满。";
+            ccEval = "<strong>登顶级战术拼图</strong>。在高难合约中（限制阻挡数、敌方攻击极高时），控场是唯一的逃课手段。该干员可作为不接敌通关的核心组件，发挥无可替代的价值。";
+        } else if (normBuff >= 0.6) {
+            dominantNiche = "<strong>多维属性极致强化与大范围伤害乘区放大</strong>。能够提供极高幅度的攻击力增幅、防御力削弱，或是强大的全场生存/技力回转光环。";
+            employmentSpace = "<strong>战术增益枢纽 (Core Enabler) / 决战技力拐</strong>。能够大幅拔高常规输出手的上限，将大杯干员瞬间抬升为超大杯表现，是打法上限的决定者。";
+            isEval = "<strong>S 级潜力核心</strong>。藏品本身就会为队伍提供基础战术面板，在自身高 Buff 乘法叠加下，可以让整个干员战术卡组的实力发生质的蜕变。";
+            ccEval = "<strong>不可或缺的顶级基石</strong>。在限制输出职业部署、高防御高血量词条堆叠的情况下，通过拐（Buff/Debuff）来强行抬升主力干员的伤害上限，是危机合约高层通关的标配。";
+        } else if (normDef >= 0.7) {
+            dominantNiche = "<strong>钢铁物理壁垒与极致承伤抗压</strong>。依靠极高防御面板或受击/反伤机制，能够稳稳锁死任何高物理攻击精英怪的单兵推进。";
+            employmentSpace = "<strong>主干阵线铁壁 (Main Tank) / 阻挡阵点核心</strong>。适合部署在抗压高危路口，强行拦截冲阵的大型精英怪。";
+            isEval = "<strong>A- 至 B 级</strong>。在探索者肉鸽这种讲求清怪效率的模式中略显被动，但面对“突袭”等特定高物攻关卡和高物伤 Boss 时，能提供极其稳固的容错率。";
+            ccEval = "<strong>S 级硬性解法</strong>。在限制治疗、强化敌方物理伤害的严苛 Tag 下，极致的物理抗性与自我恢复能力是阵线不崩盘的底牌。";
+        } else if (normSp >= 0.7) {
+            dominantNiche = "<strong>极致快速技能启动与超高频周期运转</strong>。技能 SP 需求极低或预置充能极高，落地极速点火或者实现接近常驻的短间隔战术释放。";
+            employmentSpace = "<strong>极速回费手 (DP Printer) / 快速反应特种 / 高频生存保障</strong>。适合先手铺场、应急阻挡或者针对特定间歇高压波次频繁开启技能。";
+            isEval = "<strong>A+ 级开局神器</strong>。超低的费用和极速转 CD 完美契合肉鸽探索节奏快、开局易漏怪的特性，在频繁遇敌阶段极其灵活。";
+            ccEval = "<strong>S 级战略启动器</strong>。危机合约往往会施加‘SP 回复速度减缓’或‘自然回费减缓’等恶劣词条，该干员的低 SP 消耗与高初始 SP 能强行逃课，实现提前点火。";
+        } else {
+            dominantNiche = "<strong>属性非常全面均衡的中坚战斗面板</strong>。在输出、生存、回费或辅助能力之间达到了优秀的黄金分割点，没有明显短板。";
+            employmentSpace = "<strong>常规多维战术节点 (Generalist) / 多路单兵站场手</strong>。非常适合在分路压力适中、需要兼顾生存和补充输出的常规防线中充当万金油。";
+            isEval = "<strong>A 级高泛用性之选</strong>。招募费用合适，泛用性极强，不挑藏品，能保证绝大多数常规关卡稳定过关。";
+            ccEval = "<strong>A 级常规轮换</strong>。在高难极速压迫下，泛用干员能起到优秀的平滑过渡作用，为核心爆发单位提供优质的副卡组支撑。";
+        }
+
+        nicheText = `
+            <h5 style="color: var(--primary-blue); font-size: 0.95rem; font-weight: bold; margin: 20px 0 8px 0; border-bottom: 1.5px dashed var(--border-color); padding-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                🎯 就业空间与战术定位
+            </h5>
+            <div class="report-bullet"><strong>优势区间</strong>：${dominantNiche}</div>
+            <div class="report-bullet"><strong>最佳就业空间</strong>：${employmentSpace}</div>
+        `;
+
+        isCcText = `
+            <h5 style="color: var(--primary-amber); font-size: 0.95rem; font-weight: bold; margin: 20px 0 8px 0; border-bottom: 1.5px dashed var(--border-color); padding-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                🗺️ 深度游戏模式强度评估
+            </h5>
+            <div class="report-bullet"><strong>探索者集成战略 (IS / 肉鸽)</strong>：${isEval}</div>
+            <div class="report-bullet"><strong>危机合约高难 (CC / 挂词条)</strong>：${ccEval}</div>
+        `;
+        
+        reportEl.innerHTML = `
+            <p style="margin-bottom: 15px;">${intro}</p>
+            <div style="margin-bottom: 15px;">${strengthsText}</div>
+            <div style="margin-bottom: 15px;">${weaknessesText}</div>
+            <div style="margin-bottom: 15px;">${nicheText}</div>
+            <div>${isCcText}</div>
+        `;
+    }
+
+    function updateRadarChart(labels, userData, avgData) {
+        const ctx = document.getElementById("radarChart").getContext("2d");
+        if (radarChartInstance) radarChartInstance.destroy();
+
+        radarChartInstance = new Chart(ctx, {
+            type: "radar",
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: "录入实力",
+                        data: userData,
+                        backgroundColor: "rgba(212, 163, 115, 0.2)",
+                        borderColor: "rgba(212, 163, 115, 0.85)",
+                        borderWidth: 2,
+                        pointBackgroundColor: "#d4a373",
+                        pointBorderColor: "#ffffff",
+                        pointHoverBackgroundColor: "#ffffff",
+                        pointHoverBorderColor: "#d4a373"
+                    },
+                    {
+                        label: "大类均值",
+                        data: avgData,
+                        backgroundColor: "rgba(92, 134, 141, 0.15)",
+                        borderColor: "rgba(92, 134, 141, 0.7)",
+                        borderWidth: 1.5,
+                        pointBackgroundColor: "#5c868d",
+                        pointBorderColor: "rgba(255,255,255,0.7)"
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: { color: "#2b3a4a", font: { size: 9, weight: 'bold' } }
+                    }
+                },
+                scales: {
+                    r: {
+                        grid: { color: "rgba(0,0,0,0.05)" },
+                        angleLines: { color: "rgba(0,0,0,0.05)" },
+                        pointLabels: { color: "#6b7c96", font: { size: 8, family: "Outfit", weight: 'bold' } },
+                        ticks: { display: false },
+                        min: 0,
+                        max: 100
+                    }
+                }
+            }
+        });
+    }
+
+    function updateBarChart(labels, values) {
+        const ctx = document.getElementById("barChart").getContext("2d");
+        if (barChartInstance) barChartInstance.destroy();
+
+        const barColors = values.map(v => v >= 0 ? "rgba(143, 168, 155, 0.85)" : "rgba(224, 122, 95, 0.85)");
+        const borderColors = values.map(v => v >= 0 ? "#8fa89b" : "#e07a5f");
+
+        barChartInstance = new Chart(ctx, {
+            type: "bar",
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: values,
+                    backgroundColor: barColors,
+                    borderColor: borderColors,
+                    borderWidth: 1,
+                    barThickness: 10
+                }]
+            },
+            options: {
+                indexAxis: "y",
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: {
+                        grid: { color: "rgba(0,0,0,0.04)" },
+                        ticks: { color: "#6b7c96", font: { size: 8 } }
+                    },
+                    y: {
+                        grid: { display: false },
+                        ticks: { color: "#2b3a4a", font: { size: 8, weight: 'bold' } }
+                    }
+                }
+            }
+        });
+    }
+</script>
+
+</body>
+</html>
