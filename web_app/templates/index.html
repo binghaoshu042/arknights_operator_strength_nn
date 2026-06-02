@@ -910,7 +910,7 @@
             buff_amp: parseFloat(document.getElementById("slide_buff_amp").value)
         };
 
-        fetch("/api/predict", {
+        fetch("api/predict", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload)
