@@ -1,3 +1,16 @@
+---
+title: ARK
+emoji: 🏆
+colorFrom: indigo
+colorTo: red
+sdk: gradio
+sdk_version: 5.0.0
+python_version: '3.10'
+app_file: app.py
+pinned: false
+short_description: what is your cup
+---
+
 # 🧠 测测你是什么杯 | 明日方舟六星干员战术神经网络评估仪 v3
 > **Arknights Operator Strength Evaluation Neural Network System v3 (Unified Single Model & Dynamic Game-Mode Diagnostics)**
 
